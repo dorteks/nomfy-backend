@@ -1,12 +1,15 @@
 {
-  "dependencies": {
-    "prisma": "^4.4.0",
-    "typescipt": "^1.0.0"
-  },
   "name": "nomfy-backend",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/dorteks/nomfy-backend",
   "author": "dorteks <ayodelealayemi@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "description": "E-Commerce App",
+  "private": false,
+  "scripts": {},
+  "dependencies": {
+    "prisma": "^4.4.0",
+    "typescipt": "^1.0.0"
+  }
 }
