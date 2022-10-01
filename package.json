@@ -7,7 +7,12 @@
   "license": "MIT",
   "description": "E-Commerce App",
   "private": false,
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
+    "@prisma/client": "4.4.0",
     "@types/node": "^18.7.23",
     "prisma": "^4.4.0",
     "typescipt": "^1.0.0",
@@ -15,5 +20,8 @@
   },
   "devDependencies": {
     "ts-node": "^10.9.1"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
