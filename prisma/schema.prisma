@@ -6,6 +6,134 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  role      Role
+  avatar    String?
+  email     String   @unique
+  phone     String?  @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations 
+  shop    Shop[]
+  vendor  Vendor?
+  address Address[]
+
+  @@map("user")
+}
+
+model Vendor {
+  id Int @id @default(autoincrement())
+
+  // Relations
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?  @unique
+
+  @@map("vendor")
+}
+
+model Shop {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  logo          String?
+  description   String   @unique
+  website       String?
+  phoneNumber   String?  @map("phone_number")
+  facebookLink  String?  @map("facebook-link")
+  instagramLink String?  @map("instagram-link")
+  twitterLink   String?  @map("twitter-link")
+  youtubeLink   String?  @map("youtube-link")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  //Relations
+  address Address[]
+  user    User?     @relation(fields: [userId], references: [id])
+  userId  Int?
+
+  @@map("shop")
+}
+
+model Address {
+  id            Int      @id @default(autoincrement())
+  country       String
+  state         String
+  city          String
+  zipCode       Int      @map("zip_code")
+  streetAddress String   @map("street_address")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  //Relations
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
+  shop   Shop? @relation(fields: [shopId], references: [id])
+  shopId Int?  @unique
+
+  @@map("address")
+}
+
+model Product {
+  id            Int      @id @default(autoincrement())
+  featuredImage String?  @map("featured_image")
+  gallery       String[]
+  description   String
+  unit          Int
+  price         Decimal
+  quantity      Int
+  salesPrice    Decimal? @map("sales_price")
+  SKU           String   @unique
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  //Relations
+  product_group    ProductGroup[]
+  product_category ProductCategory[]
+
+  @@map("product")
+}
+
+model ProductGroup {
+  id        Int      @id @default(autoincrement())
+  name      String
+  icon      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  //Relations
+  product_category ProductCategory[]
+  product          Product?          @relation(fields: [productId], references: [id])
+  productId        Int?              @unique
+
+  @@map("product_group")
+}
+
+model ProductCategory {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  image       String?
+  slug        String   @unique
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  //Relation
+  Product        Product?      @relation(fields: [productId], references: [id])
+  productId      Int?
+  ProductGroup   ProductGroup? @relation(fields: [productGroupId], references: [id])
+  productGroupId Int?
+
+  @@map("product_category")
+}
+
+enum Role {
+  CUSTOMER
+  VENDOR
 }
