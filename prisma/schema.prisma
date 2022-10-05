@@ -24,9 +24,11 @@ model User {
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   // Relations 
-  shop    Shop[]
-  vendor  Vendor?
-  address Address[]
+  shop       Shop[]
+  vendor     Vendor?
+  address    Address[]
+  validation Validation?
+  otp        OTP?
 
   @@map("user")
 }
@@ -135,7 +137,42 @@ model ProductCategory {
   @@map("product_category")
 }
 
+model Validation {
+  id        Int      @id @default(autoincrement())
+  phone     Boolean
+  email     Boolean
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  //Relations
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?  @unique
+
+  @@map("validation")
+}
+
+model OTP {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  code      String   @db.Char(6)
+  type      OTP_ENUM
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  //Relations
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?  @unique
+
+  @@map("otp")
+}
+
 enum Role {
   CUSTOMER
   VENDOR
+}
+
+enum OTP_ENUM {
+  PHONE
+  EMAIL
+  FORGOT_PASSWORD
 }
