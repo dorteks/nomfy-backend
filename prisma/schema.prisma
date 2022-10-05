@@ -27,8 +27,8 @@ model User {
   shop       Shop[]
   vendor     Vendor?
   address    Address[]
-  validation Validation[]
-  otp        OTP[]
+  validation Validation?
+  otp        OTP?
 
   @@map("user")
 }
@@ -146,7 +146,7 @@ model Validation {
 
   //Relations
   user   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  userId Int?  @unique
 
   @@map("validation")
 }
@@ -155,13 +155,13 @@ model OTP {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   code      String   @db.Char(6)
-  otp_enum  OTP_ENUM
+  type      OTP_ENUM
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   //Relations
   user   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  userId Int?  @unique
 
   @@map("otp")
 }
@@ -172,7 +172,7 @@ enum Role {
 }
 
 enum OTP_ENUM {
-  phone
-  email
-  forgot_password
+  PHONE
+  EMAIL
+  FORGOT_PASSWORD
 }
