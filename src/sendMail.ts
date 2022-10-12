@@ -5,8 +5,8 @@ const sendMail = async (email: String, otpCode: String) => {
     host: "smtp.gmail.com",
     port: 465,
     auth: {
-      user: "ribbon.v1testmail@gmail.com",
-      pass: "spgrywcywudbswgd",
+      user: process.env.AUTH_USER,
+      pass: process.env.AUTH_PASS,
     },
   });
   const mailOptions = {
