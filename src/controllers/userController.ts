@@ -190,14 +190,15 @@ module.exports.verify_OTP = async (req: any, res: any) => {
     where: {
       email: req.body.email,
     },
-    select: { code: true },
   });
   console.log(">>savedOTP", savedOTP);
 
-  if (savedOTP?.code === req.body.inputOTP) {
-    return res.send("success");
-  } else {
+  const isOTPCorrect = await bcrypt.compareSync(
+    req.body.inputOTP,
+    savedOTP?.code
+  );
+  if (!isOTPCorrect) {
     return res.send("Incorrect OTP, Kindly input the OTP send to your mail");
   }
-  return;
+  return res.send("Success: OTP correct ");
 };
