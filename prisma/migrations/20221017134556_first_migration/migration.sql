@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('CUSTOMER', 'VENDOR');
 
+-- CreateEnum
+CREATE TYPE "OTP_ENUM" AS ENUM ('PHONE', 'EMAIL', 'FORGOT_PASSWORD');
+
 -- CreateTable
 CREATE TABLE "user" (
     "id" SERIAL NOT NULL,
@@ -105,14 +108,30 @@ CREATE TABLE "product_category" (
     CONSTRAINT "product_category_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "user_first_name_key" ON "user"("first_name");
+-- CreateTable
+CREATE TABLE "validation" (
+    "id" SERIAL NOT NULL,
+    "phone" BOOLEAN NOT NULL,
+    "email" BOOLEAN NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "userId" INTEGER,
 
--- CreateIndex
-CREATE UNIQUE INDEX "user_middle_name_key" ON "user"("middle_name");
+    CONSTRAINT "validation_pkey" PRIMARY KEY ("id")
+);
 
--- CreateIndex
-CREATE UNIQUE INDEX "user_last_name_key" ON "user"("last_name");
+-- CreateTable
+CREATE TABLE "otp" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "type" "OTP_ENUM" NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "userId" INTEGER,
+
+    CONSTRAINT "otp_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
@@ -141,6 +160,15 @@ CREATE UNIQUE INDEX "product_group_productId_key" ON "product_group"("productId"
 -- CreateIndex
 CREATE UNIQUE INDEX "product_category_slug_key" ON "product_category"("slug");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "validation_userId_key" ON "validation"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "otp_email_key" ON "otp"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "otp_userId_key" ON "otp"("userId");
+
 -- AddForeignKey
 ALTER TABLE "vendor" ADD CONSTRAINT "vendor_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -161,3 +189,9 @@ ALTER TABLE "product_category" ADD CONSTRAINT "product_category_productId_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "product_category" ADD CONSTRAINT "product_category_productGroupId_fkey" FOREIGN KEY ("productGroupId") REFERENCES "product_group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "validation" ADD CONSTRAINT "validation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "otp" ADD CONSTRAINT "otp_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -1,3 +1,5 @@
+import { env } from "process";
+
 const nodemailer = require("nodemailer");
 
 const sendMail = async (email: String, otpCode: String) => {
