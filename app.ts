@@ -8,12 +8,14 @@ const shopRoutes = require("./src/routes/shopRoutes");
 const productRoutes = require("./src/routes/productRoutes");
 const productGroupRoutes = require("./src/routes/productGroupRoutes");
 const addressRoutes = require("./src/routes/addressRoutes");
+const productCategoryRoutes = require("./src/routes/productCategoryRoutes");
 app.use(
   userRoutes,
   shopRoutes,
   productRoutes,
   productGroupRoutes,
-  addressRoutes
+  addressRoutes,
+  productCategoryRoutes
 );
 
 app.listen(3000, () => {
