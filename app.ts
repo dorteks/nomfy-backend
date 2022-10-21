@@ -7,8 +7,15 @@ const userRoutes = require("./src/routes/userRoutes");
 const shopRoutes = require("./src/routes/shopRoutes");
 const productRoutes = require("./src/routes/productRoutes");
 const productGroupRoutes = require("./src/routes/productGroupRoutes");
-app.use(userRoutes, shopRoutes, productRoutes, productGroupRoutes);
+const addressRoutes = require("./src/routes/addressRoutes");
+app.use(
+  userRoutes,
+  shopRoutes,
+  productRoutes,
+  productGroupRoutes,
+  addressRoutes
+);
 
-app.listen(3001, () => {
+app.listen(3000, () => {
   console.log(`Server is running`);
 });
