@@ -13,4 +13,14 @@ router.post(
   productGroupController.create_productGroup
 );
 
+router.post(
+  "/products/update/product_group",
+  productGroupController.update_productGroup
+);
+
+router.post(
+  "/products/delete/product_group",
+  productGroupController.delete_productGroup
+);
+
 module.exports = router;
