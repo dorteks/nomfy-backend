@@ -171,7 +171,7 @@ module.exports.create_OTP = async (req: any, res: any) => {
         select: { code: true },
       });
 
-      // sendMail(email, otpCode);
+      sendMail(email, otpCode);
       console.log(">>>>generatedOTPCode>>>", generatedOTPCode);
       return res.json("Pending: Verification code had been sent to your email");
     } catch (error) {

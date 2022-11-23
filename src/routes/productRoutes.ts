@@ -5,10 +5,10 @@ const router = Router();
 
 router.get("/products", productController.getAllProducts);
 
-router.post("/products/create_product", productController.create_product);
+router.post("/products/create", productController.create_product);
 
-router.post("/products/update_product", productController.update_product);
+router.post("/products/update", productController.update_product);
 
-router.post("/products/delete_product", productController.delete_product);
+router.post("/products/delete", productController.delete_product);
 
 module.exports = router;
