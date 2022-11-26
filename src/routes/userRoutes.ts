@@ -7,6 +7,8 @@ router.get("/", userController.getAllUsers);
 
 router.post("/signup", userController.signup);
 
+router.post("/signup/verify", userController.verifyLoginOTP);
+
 router.post("/login", userController.login);
 
 router.post("/forgot_password", userController.forgot_password);

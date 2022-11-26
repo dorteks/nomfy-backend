@@ -12,13 +12,52 @@ module.exports.getAllUsers = async (req: any, res: any) => {
 };
 
 module.exports.signup = async (req: any, res: any) => {
-  const { firstName, lastName, email, password, role, code } = req.body;
+  const { firstName, lastName, email, password, role } = req.body;
 
   // hash password
   try {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
     console.log("salt>>>>>", salt, "hashedPassword>>>", hashedPassword);
+
+    //  send otp code here
+    // generate OTP
+    const otpCode = generateOTP();
+    console.log(otpCode);
+
+    // create OTP in db
+    const newOTP = await prisma.oTP.create({
+      data: {
+        code: otpCode,
+        email: req.body.email,
+        type: OTP_ENUM.EMAIL,
+      },
+    });
+    console.log(newOTP);
+
+    // hash OTP
+    const hashOTPCode = await bcrypt.hash(otpCode, salt);
+    console.log(">>>otp hash", hashOTPCode, ">>>>otpcode", otpCode);
+
+    // save OTP code to db
+    try {
+      const generatedOTPCode = await prisma.oTP.update({
+        data: {
+          code: hashOTPCode,
+        },
+        where: { email: req.body.email },
+        select: { code: true },
+      });
+
+      sendMail(email, otpCode);
+      console.log("email in use-", email, "otpcode sent to mail-", otpCode);
+      console.log(">>>>generatedOTPCode>>>", generatedOTPCode);
+      return res.json("Pending: Verification code had been sent to your email");
+    } catch (error) {
+      console.log(error);
+      res.send("Failed to send verification code");
+    }
+    //  opt logic ends here
 
     // validate user email
     const existingUser: any = await prisma.user.findUnique({
@@ -54,9 +93,29 @@ module.exports.signup = async (req: any, res: any) => {
     return res.json(user);
   } catch (error) {
     console.log(error);
-    res.status(500).send("problem creating user");
+    return res.status(500).send("problem creating user");
   }
-  return;
+};
+
+module.exports.verifyLoginOTP = async (req: any, res: any) => {
+  const { loginOTP, email } = req.body;
+  console.log("loginOTP -", loginOTP, email);
+
+  const savedOTP = await prisma.oTP.findUnique({
+    where: {
+      email: email,
+    },
+  });
+  console.log(">>savedOTP", savedOTP);
+
+  const isOTPCorrect = await bcrypt.compareSync(
+    req.body.loginOTP,
+    savedOTP?.code
+  );
+  if (!isOTPCorrect) {
+    return res.send("Incorrect OTP, Kindly input the OTP send to your mail");
+  }
+  return res.send("Success: OTP correct ");
 };
 
 module.exports.login = async (req: any, res: any) => {

@@ -16,7 +16,7 @@ model User {
   middleName String?  @map("middle_name")
   lastName   String   @map("last_name")
   role       Role
-  avatar     String?
+  avatar     Json?
   email      String   @unique
   phone      String?  @unique
   password   String
@@ -46,7 +46,7 @@ model Vendor {
 model Shop {
   id            Int      @id @default(autoincrement())
   name          String   @unique
-  logo          String?
+  logo          Json?
   description   String   @unique
   website       String?
   phoneNumber   String?  @map("phone_number")
@@ -86,12 +86,12 @@ model Address {
 
 model Product {
   id            Int      @id @default(autoincrement())
-  featuredImage String?  @map("featured_image")
-  gallery       String[]
+  featuredImage Json?    @map("featured_image")
+  gallery       Json[]
   description   String
-  unit          Int
-  price         Int
-  quantity      Int
+  unit          String
+  price         String
+  quantity      String
   salesPrice    Decimal? @map("sales_price")
   sku           String   @unique
   createdAt     DateTime @default(now()) @map("created_at")
@@ -107,7 +107,7 @@ model Product {
 model ProductGroup {
   id        Int      @id @default(autoincrement())
   name      String
-  icon      String
+  icon      Json
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -123,7 +123,7 @@ model ProductCategory {
   id          Int      @id @default(autoincrement())
   name        String
   description String
-  image       String?
+  image       Json?
   slug        String   @unique
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")

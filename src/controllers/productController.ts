@@ -36,6 +36,7 @@ module.exports.create_product = async (req: any, res: any) => {
 
 module.exports.update_product = async (req: any, res: any) => {
   const {
+    name,
     description,
     featuredImage,
     gallery,
@@ -69,7 +70,7 @@ module.exports.update_product = async (req: any, res: any) => {
       },
     });
     console.log(">> product updated as follows:", updateProduct);
-    return res.send(updateProduct);
+    return res.send("product updated");
   } catch (error) {
     console.log(error);
     res.send("Could not update product");
