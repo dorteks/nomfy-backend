@@ -11,7 +11,7 @@ CREATE TABLE "user" (
     "middle_name" TEXT,
     "last_name" TEXT NOT NULL,
     "role" "Role" NOT NULL,
-    "avatar" TEXT,
+    "avatar" JSONB,
     "email" TEXT NOT NULL,
     "phone" TEXT,
     "password" TEXT NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE "vendor" (
 CREATE TABLE "shop" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "logo" TEXT,
+    "logo" JSONB,
     "description" TEXT NOT NULL,
     "website" TEXT,
     "phone_number" TEXT,
@@ -67,12 +67,12 @@ CREATE TABLE "address" (
 -- CreateTable
 CREATE TABLE "product" (
     "id" SERIAL NOT NULL,
-    "featured_image" TEXT,
-    "gallery" TEXT[],
+    "featured_image" JSONB,
+    "gallery" JSONB[],
     "description" TEXT NOT NULL,
-    "unit" INTEGER NOT NULL,
-    "price" INTEGER NOT NULL,
-    "quantity" INTEGER NOT NULL,
+    "unit" TEXT NOT NULL,
+    "price" TEXT NOT NULL,
+    "quantity" TEXT NOT NULL,
     "sales_price" DECIMAL(65,30),
     "sku" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -85,7 +85,7 @@ CREATE TABLE "product" (
 CREATE TABLE "product_group" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "icon" TEXT NOT NULL,
+    "icon" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "productId" INTEGER,
@@ -98,7 +98,7 @@ CREATE TABLE "product_category" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "image" TEXT,
+    "image" JSONB,
     "slug" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -152,10 +152,10 @@ CREATE UNIQUE INDEX "shop_description_key" ON "shop"("description");
 CREATE UNIQUE INDEX "address_shopId_key" ON "address"("shopId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "product_sku_key" ON "product"("sku");
+CREATE UNIQUE INDEX "product_description_key" ON "product"("description");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "product_group_productId_key" ON "product_group"("productId");
+CREATE UNIQUE INDEX "product_group_name_key" ON "product_group"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "product_category_slug_key" ON "product_category"("slug");

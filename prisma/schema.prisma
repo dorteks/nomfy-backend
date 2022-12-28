@@ -2,177 +2,177 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  firstName  String   @map("first_name")
-  middleName String?  @map("middle_name")
-  lastName   String   @map("last_name")
-  role       Role
-  avatar     Json?
-  email      String   @unique
-  phone      String?  @unique
-  password   String
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+    id         Int      @id @default(autoincrement())
+    firstName  String   @map("first_name")
+    middleName String?  @map("middle_name")
+    lastName   String   @map("last_name")
+    role       Role
+    avatar     Json?
+    email      String   @unique
+    phone      String?  @unique
+    password   String
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
 
-  // Relations 
-  shop       Shop[]
-  vendor     Vendor?
-  address    Address[]
-  validation Validation?
-  otp        OTP?
+    // Relations 
+    shop       Shop[]
+    vendor     Vendor?
+    address    Address[]
+    validation Validation?
+    otp        OTP?
 
-  @@map("user")
+    @@map("user")
 }
 
 model Vendor {
-  id Int @id @default(autoincrement())
+    id Int @id @default(autoincrement())
 
-  // Relations
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?  @unique
+    // Relations
+    user   User? @relation(fields: [userId], references: [id])
+    userId Int?  @unique
 
-  @@map("vendor")
+    @@map("vendor")
 }
 
 model Shop {
-  id            Int      @id @default(autoincrement())
-  name          String   @unique
-  logo          Json?
-  description   String   @unique
-  website       String?
-  phoneNumber   String?  @map("phone_number")
-  facebookLink  String?  @map("facebook_link")
-  instagramLink String?  @map("instagram_link")
-  twitterLink   String?  @map("twitter_link")
-  youtubeLink   String?  @map("youtube_link")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+    id            Int      @id @default(autoincrement())
+    name          String   @unique
+    logo          Json?
+    description   String   @unique
+    website       String?
+    phoneNumber   String?  @map("phone_number")
+    facebookLink  String?  @map("facebook_link")
+    instagramLink String?  @map("instagram_link")
+    twitterLink   String?  @map("twitter_link")
+    youtubeLink   String?  @map("youtube_link")
+    createdAt     DateTime @default(now()) @map("created_at")
+    updatedAt     DateTime @updatedAt @map("updated_at")
 
-  //Relations
-  address Address[]
-  user    User?     @relation(fields: [userId], references: [id])
-  userId  Int?
+    //Relations
+    address Address[]
+    user    User?     @relation(fields: [userId], references: [id])
+    userId  Int?
 
-  @@map("shop")
+    @@map("shop")
 }
 
 model Address {
-  id            Int      @id @default(autoincrement())
-  country       String
-  state         String
-  city          String
-  zipCode       Int      @map("zip_code")
-  streetAddress String   @map("street_address")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+    id            Int      @id @default(autoincrement())
+    country       String
+    state         String
+    city          String
+    zipCode       String   @map("zip_code")
+    streetAddress String   @map("street_address")
+    createdAt     DateTime @default(now()) @map("created_at")
+    updatedAt     DateTime @updatedAt @map("updated_at")
 
-  //Relations
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?
-  shop   Shop? @relation(fields: [shopId], references: [id])
-  shopId Int?  @unique
+    //Relations
+    user   User? @relation(fields: [userId], references: [id])
+    userId Int?
+    shop   Shop? @relation(fields: [shopId], references: [id])
+    shopId Int?  @unique
 
-  @@map("address")
+    @@map("address")
 }
 
 model Product {
-  id            Int      @id @default(autoincrement())
-  featuredImage Json?    @map("featured_image")
-  gallery       Json[]
-  description   String
-  unit          String
-  price         String
-  quantity      String
-  salesPrice    Decimal? @map("sales_price")
-  sku           String   @unique
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+    id            Int      @id @default(autoincrement())
+    featuredImage Json?    @map("featured_image")
+    gallery       Json[]
+    description   String   @map("name")
+    unit          String
+    price         String
+    quantity      String
+    salesPrice    Decimal? @map("sales_price")
+    sku           String   @unique
+    createdAt     DateTime @default(now()) @map("created_at")
+    updatedAt     DateTime @updatedAt @map("updated_at")
 
-  //Relations
-  product_group    ProductGroup[]
-  product_category ProductCategory[]
+    //Relations
+    product_group    ProductGroup[]
+    product_category ProductCategory[]
 
-  @@map("product")
+    @@map("product")
 }
 
 model ProductGroup {
-  id        Int      @id @default(autoincrement())
-  name      String
-  icon      Json
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    icon      Json?
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
-  //Relations
-  product_category ProductCategory[]
-  product          Product?          @relation(fields: [productId], references: [id])
-  productId        Int?              @unique
+    //Relations
+    product_category ProductCategory[]
+    product          Product?          @relation(fields: [productId], references: [id])
+    productId        Int?
 
-  @@map("product_group")
+    @@map("product_group")
 }
 
 model ProductCategory {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  image       Json?
-  slug        String   @unique
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+    id          Int      @id @default(autoincrement())
+    name        String
+    description String
+    image       Json?
+    slug        String   @unique
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
 
-  //Relation
-  product        Product?      @relation(fields: [productId], references: [id])
-  productId      Int?
-  ProductGroup   ProductGroup? @relation(fields: [productGroupId], references: [id])
-  productGroupId Int?
+    //Relation
+    product        Product?      @relation(fields: [productId], references: [id])
+    productId      Int?
+    ProductGroup   ProductGroup? @relation(fields: [productGroupId], references: [id])
+    productGroupId Int?
 
-  @@map("product_category")
+    @@map("product_category")
 }
 
 model Validation {
-  id        Int      @id @default(autoincrement())
-  phone     Boolean
-  email     Boolean
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+    id        Int      @id @default(autoincrement())
+    phone     Boolean
+    email     Boolean
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
-  //Relations
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?  @unique
+    //Relations
+    user   User? @relation(fields: [userId], references: [id])
+    userId Int?  @unique
 
-  @@map("validation")
+    @@map("validation")
 }
 
 model OTP {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  code      String
-  type      OTP_ENUM
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+    id        Int      @id @default(autoincrement())
+    email     String   @unique
+    code      String
+    type      OTP_ENUM
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
-  //Relations
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?  @unique
+    //Relations
+    user   User? @relation(fields: [userId], references: [id])
+    userId Int?  @unique
 
-  @@map("otp")
+    @@map("otp")
 }
 
 enum Role {
-  CUSTOMER
-  VENDOR
+    CUSTOMER
+    VENDOR
 }
 
 enum OTP_ENUM {
-  PHONE
-  EMAIL
-  FORGOT_PASSWORD
+    PHONE
+    EMAIL
+    FORGOT_PASSWORD
 }

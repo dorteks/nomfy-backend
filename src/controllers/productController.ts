@@ -7,6 +7,27 @@ module.exports.getAllProducts = async (req: any, res: any) => {
   res.send(products);
 };
 
+module.exports.getOneProduct = async (req: any, res: any) => {
+  const productId = parseInt(req.params.productId, 10);
+
+  const oneProduct = await prisma.product.findUnique({
+    select: {
+      id: true,
+      price: true,
+      quantity: true,
+      salesPrice: true,
+    },
+    where: {
+      id: productId,
+    },
+  });
+  if (!oneProduct) {
+    return res.send("product not found");
+  } else {
+    return res.send(oneProduct);
+  }
+};
+
 module.exports.create_product = async (req: any, res: any) => {
   const {
     description,
@@ -18,6 +39,7 @@ module.exports.create_product = async (req: any, res: any) => {
     salesPrice,
     sku,
   } = req.body;
+
   const addProduct = await prisma.product.create({
     data: {
       description,
@@ -30,13 +52,16 @@ module.exports.create_product = async (req: any, res: any) => {
       sku,
     },
   });
-  console.log(addProduct);
-  return res.send("product added successfully");
+
+  if (!addProduct) {
+    res.send("error creating product");
+  } else {
+    return res.status(200).send("Product added");
+  }
 };
 
 module.exports.update_product = async (req: any, res: any) => {
   const {
-    name,
     description,
     featuredImage,
     gallery,
@@ -49,7 +74,7 @@ module.exports.update_product = async (req: any, res: any) => {
 
   const lookupProduct = await prisma.product.findUnique({
     where: { sku: req.body.sku },
-    select: { quantity: true },
+    // select: { quantity: true },
   });
 
   if (!lookupProduct) {
@@ -70,7 +95,7 @@ module.exports.update_product = async (req: any, res: any) => {
       },
     });
     console.log(">> product updated as follows:", updateProduct);
-    return res.send("product updated");
+    return res.send(updateProduct);
   } catch (error) {
     console.log(error);
     res.send("Could not update product");
@@ -78,9 +103,11 @@ module.exports.update_product = async (req: any, res: any) => {
 };
 
 module.exports.delete_product = async (req: any, res: any) => {
+  const productId = parseInt(req.params.productId, 10);
+
   const lookupProduct = await prisma.product.findUnique({
-    where: { sku: req.body.sku },
-    select: { quantity: true },
+    where: { id: productId },
+    select: { description: true },
   });
 
   if (!lookupProduct) {
@@ -89,7 +116,7 @@ module.exports.delete_product = async (req: any, res: any) => {
 
   try {
     await prisma.product.delete({
-      where: { sku: req.body.sku },
+      where: { id: productId },
     });
     res.send("product deleted");
   } catch (error) {

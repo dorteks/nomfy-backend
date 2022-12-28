@@ -1,4 +1,5 @@
 import { OTP_ENUM, PrismaClient } from "@prisma/client";
+import { userInfo } from "os";
 import generateOTP from "../generateOTP";
 
 const bcrypt = require("bcrypt");
@@ -6,13 +7,44 @@ const prisma = new PrismaClient();
 const sendMail = require("../sendMail");
 
 module.exports.getAllUsers = async (req: any, res: any) => {
-  const users = await prisma.oTP.findMany();
+  const users = await prisma.user.findMany();
   console.log("retrieved users");
   return res.json(users);
 };
 
+module.exports.login = async (req: any, res: any) => {
+  const { email, password } = req.body;
+  console.log(">>>user log in details provided>>>", email, password);
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: req.body.email,
+    },
+    select: { email: true, password: true },
+  });
+
+  if (user === null) {
+    return res.status(404).send("cannot find user");
+  }
+
+  try {
+    const isPasswordCorrect = await bcrypt.compareSync(
+      req.body.password,
+      user.password
+    );
+    if (!isPasswordCorrect) {
+      return res.send("password isincorrect");
+    }
+    return res.send("Success: User logged in");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("problem logging in");
+  }
+};
+
 module.exports.signup = async (req: any, res: any) => {
   const { firstName, lastName, email, password, role } = req.body;
+  console.log("password>>>", password);
 
   // hash password
   try {
@@ -20,43 +52,43 @@ module.exports.signup = async (req: any, res: any) => {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
     console.log("salt>>>>>", salt, "hashedPassword>>>", hashedPassword);
 
-    //  send otp code here
-    // generate OTP
-    const otpCode = generateOTP();
-    console.log(otpCode);
+    // //  send otp code here
+    // // generate OTP
+    // const otpCode = generateOTP();
+    // console.log(otpCode);
 
-    // create OTP in db
-    const newOTP = await prisma.oTP.create({
-      data: {
-        code: otpCode,
-        email: req.body.email,
-        type: OTP_ENUM.EMAIL,
-      },
-    });
-    console.log(newOTP);
+    // // create OTP in db
+    // const newOTP = await prisma.oTP.create({
+    //   data: {
+    //     code: otpCode,
+    //     email: req.body.email,
+    //     type: OTP_ENUM.EMAIL,
+    //   },
+    // });
+    // console.log("newOTP>>", newOTP);
 
-    // hash OTP
-    const hashOTPCode = await bcrypt.hash(otpCode, salt);
-    console.log(">>>otp hash", hashOTPCode, ">>>>otpcode", otpCode);
+    // // hash OTP
+    // const hashOTPCode = await bcrypt.hash(otpCode, salt);
+    // console.log(">>>otp hash", hashOTPCode, ">>>>otpcode", otpCode);
 
-    // save OTP code to db
-    try {
-      const generatedOTPCode = await prisma.oTP.update({
-        data: {
-          code: hashOTPCode,
-        },
-        where: { email: req.body.email },
-        select: { code: true },
-      });
+    // // save OTP code to db
+    // try {
+    //   const generatedOTPCode = await prisma.oTP.update({
+    //     data: {
+    //       code: hashOTPCode,
+    //     },
+    //     where: { email: req.body.email },
+    //     select: { code: true },
+    //   });
 
-      sendMail(email, otpCode);
-      console.log("email in use-", email, "otpcode sent to mail-", otpCode);
-      console.log(">>>>generatedOTPCode>>>", generatedOTPCode);
-      return res.json("Pending: Verification code had been sent to your email");
-    } catch (error) {
-      console.log(error);
-      res.send("Failed to send verification code");
-    }
+    //   sendMail(email, otpCode);
+    //   console.log("email in use-", email, "otpcode sent to mail-", otpCode);
+    //   console.log(">>>>generatedOTPCode>>>", generatedOTPCode);
+    //   return res.json("Pending: Verification code had been sent to your email");
+    // } catch (error) {
+    //   console.log(error);
+    //   res.send("Failed to send verification code");
+    // }
     //  opt logic ends here
 
     // validate user email
@@ -97,9 +129,9 @@ module.exports.signup = async (req: any, res: any) => {
   }
 };
 
-module.exports.verifyLoginOTP = async (req: any, res: any) => {
-  const { loginOTP, email } = req.body;
-  console.log("loginOTP -", loginOTP, email);
+module.exports.verifySignUpOtp = async (req: any, res: any) => {
+  const { signupOTP, email } = req.body;
+  console.log("signupOTP -", signupOTP, email);
 
   const savedOTP = await prisma.oTP.findUnique({
     where: {
@@ -109,43 +141,13 @@ module.exports.verifyLoginOTP = async (req: any, res: any) => {
   console.log(">>savedOTP", savedOTP);
 
   const isOTPCorrect = await bcrypt.compareSync(
-    req.body.loginOTP,
+    req.body.signupOTP,
     savedOTP?.code
   );
   if (!isOTPCorrect) {
     return res.send("Incorrect OTP, Kindly input the OTP send to your mail");
   }
   return res.send("Success: OTP correct ");
-};
-
-module.exports.login = async (req: any, res: any) => {
-  const { email, password } = req.body;
-  console.log(">>>user log in details provided>>>", email, password);
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: req.body.email,
-    },
-    select: { email: true, password: true },
-  });
-
-  if (user == null) {
-    return res.status(404).send("cannot find user");
-  }
-
-  try {
-    const isPasswordCorrect = await bcrypt.compareSync(
-      req.body.password,
-      user.password
-    );
-    if (!isPasswordCorrect) {
-      return res.send("password isincorrect");
-    }
-    return res.send("Success: User logged in");
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("problem logging in");
-  }
 };
 
 module.exports.forgot_password = async (req: any, res: any) => {
@@ -261,4 +263,11 @@ module.exports.verify_OTP = async (req: any, res: any) => {
     return res.send("Incorrect OTP, Kindly input the OTP send to your mail");
   }
   return res.send("Success: OTP correct ");
+};
+
+module.exports.updateUserProfile = async (req: any, res: any) => {
+  const updateUser = await prisma.user.update({
+    where: {},
+    data: {},
+  });
 };
