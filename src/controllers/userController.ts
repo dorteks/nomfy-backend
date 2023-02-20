@@ -1,4 +1,5 @@
 import { OTP_ENUM, PrismaClient } from "@prisma/client";
+import generateOTP from "../generateOTP";
 
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
@@ -132,7 +133,7 @@ module.exports.create_OTP = async (req: any, res: any) => {
   console.log(email);
 
   // generate OTP
-  const otpCode = `${Math.floor(100000 + Math.random() * 900000)}`;
+  const otpCode = generateOTP();
   console.log(otpCode);
 
   // create OTP in db

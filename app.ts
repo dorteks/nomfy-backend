@@ -4,8 +4,9 @@ const app = express();
 app.use(express.json());
 
 const userRoutes = require("./src/routes/userRoutes");
-app.use(userRoutes);
+const shopRoutes = require("./src/routes/shopRoutes");
+app.use(userRoutes, shopRoutes);
 
-app.listen(3000, () => {
+app.listen(3001, () => {
   console.log(`Server is running`);
 });
