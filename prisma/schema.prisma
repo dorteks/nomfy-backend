@@ -1,3 +1,4 @@
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -154,7 +155,7 @@ model Validation {
 model OTP {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  code      String   @db.Char(6)
+  code      String   
   type      OTP_ENUM
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -176,3 +177,4 @@ enum OTP_ENUM {
   EMAIL
   FORGOT_PASSWORD
 }
+
