@@ -1,5 +1,3 @@
-import { env } from "process";
-
 const nodemailer = require("nodemailer");
 
 const sendMail = async (email: String, otpCode: String) => {
@@ -11,6 +9,7 @@ const sendMail = async (email: String, otpCode: String) => {
       pass: process.env.AUTH_PASS,
     },
   });
+
   const mailOptions = {
     from: "favian.olson18@ethereal.email",
     to: email,
