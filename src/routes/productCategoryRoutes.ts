@@ -3,23 +3,20 @@ const productCategoryController = require("../controllers/productCategoryControl
 
 const router = Router();
 
-router.get(
-  "/productCategory",
-  productCategoryController.getAlProductCategories
-);
+router.get("/categories", productCategoryController.getAlProductCategories);
 
 router.post(
-  "/productCategory/create",
+  "/categories/create",
   productCategoryController.create_productCategory
 );
 
 router.post(
-  "/productCategory/update",
+  "/categories/update",
   productCategoryController.update_productCategory
 );
 
-router.post(
-  "/productCategory/delete",
+router.delete(
+  "/categories/delete",
   productCategoryController.delete_productCategory
 );
 

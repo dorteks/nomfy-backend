@@ -7,6 +7,36 @@ module.exports.getAllShops = async (req: any, res: any) => {
   res.send(shops);
 };
 
+module.exports.getOneShop = async (req: any, res: any) => {
+  const shopId = parseInt(req.params.shopId, 10);
+  const shop = await prisma.shop.findUnique({
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      phoneNumber: true,
+      logo: true,
+      website: true,
+      address: {
+        select: {
+          id: true,
+          state: true,
+          city: true,
+          country: true,
+          zipCode: true,
+          streetAddress: true,
+        },
+      },
+    },
+    where: { id: shopId },
+  });
+  if (!shop) {
+    return res.send("shop does not exist");
+  } else {
+    return res.send(shop);
+  }
+};
+
 module.exports.create_shop = async (req: any, res: any) => {
   const {
     name,
@@ -81,10 +111,10 @@ module.exports.update_shop = async (req: any, res: any) => {
 };
 
 module.exports.delete_shop = async (req: any, res: any) => {
-  const { name } = req.body;
+  const shopId = parseInt(req.params.shopId, 10);
 
   const lookupShop = await prisma.shop.findUnique({
-    where: { name: name },
+    where: { id: shopId },
   });
   if (!lookupShop) {
     return res.send("shop does not exist");
@@ -92,7 +122,7 @@ module.exports.delete_shop = async (req: any, res: any) => {
 
   try {
     await prisma.shop.delete({
-      where: { name: name },
+      where: { id: shopId },
     });
     console.log(">>shop deleted");
     return res.send("shop deleted");

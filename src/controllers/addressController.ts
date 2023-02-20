@@ -8,13 +8,32 @@ module.exports.getAllAddress = async (req: any, res: any) => {
   return res.send(address);
 };
 
+module.exports.getOneAddress = async (req: any, res: any) => {
+  const addressId = parseInt(req.params.addressId, 10);
+  const oneAddress = await prisma.address.findUnique({
+    select: {
+      id: true,
+      state: true,
+      city: true,
+      country: true,
+      zipCode: true,
+      streetAddress: true,
+    },
+    where: { id: addressId },
+  });
+  if (!oneAddress) {
+    return res.send("shop not found");
+  } else {
+    return res.send(oneAddress);
+  }
+};
+
 module.exports.createAddress = async (req: any, res: any) => {
   const { country, state, city, zipCode, streetAddress } = req.body;
 
   const createNewAddress = await prisma.address.create({
     data: { country, state, city, zipCode, streetAddress },
   });
-  console.log("address created", createNewAddress);
   return res.send(createNewAddress);
 };
 
@@ -35,8 +54,10 @@ module.exports.updateAddress = async (req: any, res: any) => {
 };
 
 module.exports.deleteAddress = async (req: any, res: any) => {
+  const addressId = parseInt(req.params.addressId, 10);
+
   const lookupAddress = await prisma.address.findUnique({
-    where: { id: req.body.id },
+    where: { id: addressId },
     select: { streetAddress: true },
   });
 
@@ -46,7 +67,7 @@ module.exports.deleteAddress = async (req: any, res: any) => {
 
   try {
     const deleteAddress = await prisma.address.delete({
-      where: { id: req.body.id },
+      where: { id: addressId },
       select: { streetAddress: true },
     });
     console.log("address deleted", deleteAddress);

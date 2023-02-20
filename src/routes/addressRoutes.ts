@@ -5,10 +5,12 @@ const router = Router();
 
 router.get("/address", addressController.getAllAddress);
 
+router.get("/address/:addressId", addressController.getOneAddress);
+
 router.post("/address/create", addressController.createAddress);
 
 router.post("/address/update", addressController.updateAddress);
 
-router.post("/address/delete", addressController.deleteAddress);
+router.delete("/address/:addressId", addressController.deleteAddress);
 
 module.exports = router;
